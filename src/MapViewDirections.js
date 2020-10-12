@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MapView from 'react-native-maps';
@@ -184,7 +185,7 @@ class MapViewDirections extends Component {
 			);
 		})).then(results => {
 			// Combine all Directions API Request results into one
-			const result = results.reduce((acc, { distance, duration, coordinates, fare, waypointOrder }) => {
+			const result = results.reduce((acc, { distance, duration, coordinates, fare, currentStep, nextStep, waypointOrder }) => {
 				acc.coordinates = [
 					...acc.coordinates,
 					...coordinates,
@@ -195,6 +196,14 @@ class MapViewDirections extends Component {
 					...acc.fares,
 					fare,
 				];
+				acc.currentStep = {
+					...acc.currentStep,
+					...currentStep,
+				};
+				acc.nextStep = {
+					...acc.nextStep,
+					...nextStep,
+				};
 				acc.waypointOrder = [
 					...acc.waypointOrder,
 					waypointOrder,
@@ -206,6 +215,8 @@ class MapViewDirections extends Component {
 				distance: 0,
 				duration: 0,
 				fares: [],
+				currentStep: {},
+				nextStep: {},
 				waypointOrder: [],
 			});
 
@@ -270,6 +281,8 @@ class MapViewDirections extends Component {
 								}, [])
 						),
 						fare: route.fare,
+						currentStep: route.legs[0].steps.length ? route.legs[0].steps[0] : {},
+						nextStep: route.legs[0].steps.length > 1 ? route.legs[0].steps[1] : {},
 						waypointOrder: route.waypoint_order,
 					});
 
